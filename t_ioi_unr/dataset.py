@@ -5,6 +5,9 @@ from flwr_datasets.partitioner import IidPartitioner
 from transformers import AutoTokenizer
 from trl import DataCollatorForCompletionOnlyLM
 
+import warnings
+warnings.filterwarnings("ignore", message="You have set `use_cache` to `False`.*")
+
 FDS = None  # Cache FederatedDataset
 
 

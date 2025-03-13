@@ -11,7 +11,8 @@ from omegaconf import DictConfig
 from t_ioi_unr.models import get_model, get_parameters, set_parameters
 from t_ioi_unr.dataset import replace_keys
 from t_ioi_unr.strategy import FlowerTuneLlm, FlowerTuneLlm_FlexLoRA
-
+import warnings
+warnings.filterwarnings("ignore", message="You have set `use_cache` to `False`.*")
 
 # Get function that will be executed by the strategy's evaluate() method
 # Here we use it to save global model checkpoints
@@ -74,17 +75,32 @@ def server_fn(context: Context):
     init_model_parameters = get_parameters(init_model)
     init_model_parameters = ndarrays_to_parameters(init_model_parameters)
 
-    # Define strategy
-    strategy = FlowerTuneLlm_FlexLoRA(
-        fraction_fit=cfg.strategy.fraction_fit,
-        fraction_evaluate=cfg.strategy.fraction_evaluate,
-        on_fit_config_fn=get_on_fit_config(save_path),
-        fit_metrics_aggregation_fn=fit_weighted_average,
-        initial_parameters=init_model_parameters,
-        evaluate_fn=get_evaluate_fn(
-            cfg.model, cfg.train.save_every_round, num_rounds, save_path
-        ),
-    )
+    if context.run_config["use_flexlora"]:
+        print("Using FlexLoRA for Aggregation")
+        # Define strategy
+        strategy = FlowerTuneLlm_FlexLoRA(
+            fraction_fit=cfg.strategy.fraction_fit,
+            fraction_evaluate=cfg.strategy.fraction_evaluate,
+            on_fit_config_fn=get_on_fit_config(save_path),
+            fit_metrics_aggregation_fn=fit_weighted_average,
+            initial_parameters=init_model_parameters,
+            evaluate_fn=get_evaluate_fn(
+                cfg.model, cfg.train.save_every_round, num_rounds, save_path
+            ),
+        )
+    else:
+        print("Using FedAvg for Aggregation")
+        strategy = FlowerTuneLlm(
+            fraction_fit=cfg.strategy.fraction_fit,
+            fraction_evaluate=cfg.strategy.fraction_evaluate,
+            on_fit_config_fn=get_on_fit_config(save_path),
+            fit_metrics_aggregation_fn=fit_weighted_average,
+            initial_parameters=init_model_parameters,
+            evaluate_fn=get_evaluate_fn(
+                cfg.model, cfg.train.save_every_round, num_rounds, save_path
+            ),
+        )
+
     config = ServerConfig(num_rounds=num_rounds)
 
     return ServerAppComponents(strategy=strategy, config=config)

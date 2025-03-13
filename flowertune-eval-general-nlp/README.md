@@ -50,7 +50,6 @@ python eval.py --base-model-name-path="GoToCompany/gemma2-9b-cpt-sahabatai-v1-in
 
 | Challenges | STEM       |   Social   |  Humanities |   Avg      |
 | :--------: | :--------: | :--------: | :--------:  | :--------: |
-|GCCL        |   54.33    |  79.92     |   60.28     |   64.84    |
 |w/o FlexLoRA|   56.16    |  80.37     |   61.40     |   65.97    |
 |w FlexLoRA  |   59.75    |  81.11     |   62.48     |   67.78    |
 

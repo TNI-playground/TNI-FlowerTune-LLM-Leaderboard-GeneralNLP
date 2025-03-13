@@ -13,6 +13,8 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from flwr.server.strategy.aggregate import aggregate
 
+import warnings
+warnings.filterwarnings("ignore", message="You have set `use_cache` to `False`.*")
 
 class FlowerTuneLlm(FedAvg):
     """Customised FedAvg strategy implementation.

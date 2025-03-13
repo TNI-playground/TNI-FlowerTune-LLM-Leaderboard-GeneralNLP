@@ -32,8 +32,7 @@ from t_ioi_unr.models import (
 # Avoid warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 os.environ["RAY_DISABLE_DOCKER_CPU_WARNING"] = "1"
-warnings.filterwarnings("ignore", category=UserWarning)
-
+warnings.filterwarnings("ignore", message="You have set `use_cache` to `False`.*")
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
